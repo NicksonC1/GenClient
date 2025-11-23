@@ -1,4 +1,4 @@
-# VEX PROS Template (gen-client)
+# GenClient
 
 A ready-to-use VEX V5 PROS template with common subsystems, driver utilities, and autonomous helpers baked in. Configure your robot, drop in your auton routines, and start iterating fast.
 
