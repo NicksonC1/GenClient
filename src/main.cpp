@@ -1,7 +1,9 @@
 #include "main.h"
-#include "gen/motion.h"
+#include "gen/chassis.h"
 #include "gen/colorsort.h"
 #include "gen/electronics.h"
+#include "gen/odom.h"
+#include "pros/distance.hpp"
 #include "pros/optical.hpp"
 
 using DriveMode = gen::Controller::DriveMode;
@@ -14,20 +16,45 @@ pros::adi::DigitalIn autonSwitch('H');
 pros::MotorGroup leftMotors({-11, -12, -13}, pros::MotorGearset::blue); 
 pros::MotorGroup rightMotors({18, 19, 20}, pros::MotorGearset::blue); 
 
-namespace Motor{
-  pros::Motor intakeF(10, pros::MotorGearset::blue); 
-  pros::Motor intakeU(-1, pros::MotorGearset::blue); 
-} // namespace Motor
+pros::Rotation verticalLeft(5);
+pros::Rotation verticalRight(6);
+pros::Rotation horizontal(7);
+gen::CustomIMU s_imu(9, 1.0);
 
-namespace Sensor{
-  pros::Distance d_front(4); 
-  pros::Distance d_left(3); 
-  pros::Optical o_colorSort(8); 
-  pros::Optical o_crossed(22); 
-} // namspace Sensor
+gen::TrackingWheel verticalLTracker(&verticalLeft, 2.75, 3.5, 1.0, false);
+gen::TrackingWheel verticalRTracker(&verticalRight, 2.75, -3.5, 1.0, true);
+gen::TrackingWheel horizontalTracker(&horizontal, 2.75, -2.5);
+
+gen::OdomSensors sensors{&verticalLTracker, &verticalRTracker, &horizontalTracker, nullptr, &s_imu};
+gen::Drivetrain drive(&leftMotors, &rightMotors, 1.333, 3.25, 11.5, 12.5);
+
+pros::Distance frontWall(4);
+pros::Distance leftWall(3);
+std::vector<gen::DistanceResetSensor> distanceResetSensors = {
+    {&frontWall, gen::DistanceResetSensor::Side::Front, 0.0, 10.0},
+    {&leftWall, gen::DistanceResetSensor::Side::Left, -4.0, 10.0},
+};
+
+gen::Chassis::Tuning lateralTuning{8.0, 0.0, 0.0};
+gen::Chassis::Tuning angularTuning{2.0, 0.0, 0.0};
+gen::Chassis::Limits lateralLimits{2.0, 250, 4000, 127.0};
+gen::Chassis::Limits angularLimits{2.0, 250, 3000, 127.0};
+
+gen::Chassis chassis(leftMotors,
+                     rightMotors,
+                     drive,
+                     lateralTuning,
+                     angularTuning,
+                     lateralLimits,
+                     angularLimits);
 
 namespace Auton{
-    void main(){}
+    void main(){
+      chassis.driveDistance(24.0);
+      chassis.turnToHeading(90.0);
+      chassis.strafeDistance(-12.0);
+      chassis.driveToPose({24.0, 36.0, gen::deg_to_rad(45.0)});
+    }
     void leftB(){}
     void leftR(){}
     void rightB(){}
@@ -66,6 +93,19 @@ void selector() {
 void initialize() {
   pros::Task t_Select(selector);
 	pros::lcd::initialize();
+  gen::setSensors(sensors, drive);
+  gen::setDistanceResetSensors(distanceResetSensors);
+  gen::init();
+
+  pros::Task screenTask([&]() {
+    while (1) {
+        pros::lcd::print(0, "X: %f", chassis.getPose().x);
+        pros::lcd::print(1, "Y: %f", chassis.getPose().y);
+        pros::lcd::print(2, "Theta: %f", chassis.getPose().theta);
+        pros::delay(50);
+      }
+  });
+
   pros::Task autonSelect([]{ while(1){ selector(); pros::delay(10); }});
 }
 void disabled() {}
