@@ -159,7 +159,7 @@ class Controller {
   void curve(double amount, bool enabled ) { curve_amount_ = amount; drive_curves_ = enabled;}
 
   bool holding(Button button) const { return controller_.get_digital(to_pros(button)); }
-  bool pressing(Button button) const { return controller_.get_digital_new_press(to_pros(button)); }
+  bool pressed(Button button) const { return controller_.get_digital_new_press(to_pros(button)); }
 
   std::pair<int, int> tank_two_stick() const {
     const int left = read_axis(pros::E_CONTROLLER_ANALOG_LEFT_Y);

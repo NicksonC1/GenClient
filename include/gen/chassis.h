@@ -42,6 +42,7 @@ class Chassis {
   void strafeDistance(double distance, double max_power = 100.0);
   void turnToHeading(double heading_deg, double max_power = 80.0);
   void driveToPoint(double target_x, double target_y, double max_power = 100.0);
+  // target.theta is interpreted in degrees for user convenience.
   void driveToPose(const Pose& target, double max_power = 100.0);
 
  private:

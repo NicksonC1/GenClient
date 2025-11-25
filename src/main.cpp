@@ -12,14 +12,16 @@ using Button = gen::Controller::Button;
 gen::Controller controller(DriveMode::Arcade2Stick, 3, 10.0, true, pros::E_CONTROLLER_MASTER);
 gen::Piston pistonA('A'); 
 pros::adi::DigitalIn autonSwitch('H');
-
-pros::MotorGroup leftMotors({-11, -12, -13}, pros::MotorGearset::blue); 
-pros::MotorGroup rightMotors({18, 19, 20}, pros::MotorGearset::blue); 
+pros::Distance frontWall(4);
+pros::Distance leftWall(3);
 
 pros::Rotation verticalLeft(5);
 pros::Rotation verticalRight(6);
 pros::Rotation horizontal(7);
 gen::CustomIMU s_imu(9, 1.0);
+
+pros::MotorGroup leftMotors({-11, -12, -13}, pros::MotorGearset::blue); 
+pros::MotorGroup rightMotors({18, 19, 20}, pros::MotorGearset::blue); 
 
 gen::TrackingWheel verticalLTracker(&verticalLeft, 2.75, 3.5, 1.0, false);
 gen::TrackingWheel verticalRTracker(&verticalRight, 2.75, -3.5, 1.0, true);
@@ -28,8 +30,6 @@ gen::TrackingWheel horizontalTracker(&horizontal, 2.75, -2.5);
 gen::OdomSensors sensors{&verticalLTracker, &verticalRTracker, &horizontalTracker, nullptr, &s_imu};
 gen::Drivetrain drive(&leftMotors, &rightMotors, 1.333, 3.25, 11.5, 12.5);
 
-pros::Distance frontWall(4);
-pros::Distance leftWall(3);
 std::vector<gen::DistanceResetSensor> distanceResetSensors = {
     {&frontWall, gen::DistanceResetSensor::Side::Front, 0.0, 10.0},
     {&leftWall, gen::DistanceResetSensor::Side::Left, -4.0, 10.0},
@@ -53,7 +53,7 @@ namespace Auton{
       chassis.driveDistance(24.0);
       chassis.turnToHeading(90.0);
       chassis.strafeDistance(-12.0);
-      chassis.driveToPose({24.0, 36.0, gen::deg_to_rad(45.0)});
+      chassis.driveToPose({24.0, 36.0, 45.0});
     }
     void leftB(){}
     void leftR(){}
@@ -108,6 +108,7 @@ void initialize() {
 
   pros::Task autonSelect([]{ while(1){ selector(); pros::delay(10); }});
 }
+
 void disabled() {}
 void competition_initialize() {}
 void autonomous() {
@@ -117,7 +118,7 @@ void autonomous() {
 void opcontrol() {
 	while (1) {
     controller.arcade_two_stick();
-    if(controller.pressing(Button::A)) { pistonA.toggle(); }
+    if(controller.pressed(Button::A)) { pistonA.toggle(); }
 		pros::delay(10);
 	}
 }

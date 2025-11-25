@@ -103,7 +103,7 @@ void Chassis::driveToPoint(const double target_x, const double target_y, const d
 
 void Chassis::driveToPose(const Pose& target, const double max_power) {
   driveToFieldTarget(target.x, target.y, max_power);
-  turnToHeading(rad_to_deg(target.theta), max_power);
+  turnToHeading(target.theta, max_power);
 }
 
 void Chassis::driveToFieldTarget(const double target_x,
