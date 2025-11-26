@@ -2,6 +2,8 @@
 
 #include <cmath>
 #include <initializer_list>
+#include <map>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -27,11 +29,11 @@ class CustomIMU : public pros::IMU {
 
 class Piston : public pros::adi::DigitalOut {
  public:
-  explicit Piston(std::uint8_t adi_port, bool init_state = false)
-      : pros::adi::DigitalOut(adi_port, init_state), state_(init_state) {}
+  explicit Piston(std::uint8_t adi_port, bool init_state = false, std::string name = "")
+      : pros::adi::DigitalOut(adi_port, init_state), state_(init_state), name_(std::move(name)) {}
 
-  explicit Piston(pros::adi::ext_adi_port_pair_t port_pair, bool init_state = false)
-      : pros::adi::DigitalOut(port_pair, init_state), state_(init_state) {}
+  explicit Piston(pros::adi::ext_adi_port_pair_t port_pair, bool init_state = false, std::string name = "")
+      : pros::adi::DigitalOut(port_pair, init_state), state_(init_state), name_(std::move(name)) {}
 
   std::int32_t set_value(bool value) {
     const auto result = pros::adi::DigitalOut::set_value(value);
@@ -46,10 +48,63 @@ class Piston : public pros::adi::DigitalOut {
   void toggle() { set_value(!state_); }
 
   bool state() const { return state_; }
+  const std::string& name() const { return name_; }
   using pros::adi::DigitalOut::get_port;
 
  private:
   bool state_{false};
+  std::string name_{};
+};
+
+struct PistonHandle {
+  std::string name;
+  Piston* piston{nullptr};
+  bool enabled{true};
+};
+
+class PistonGroup {
+ public:
+  PistonGroup() = default;
+  PistonGroup(std::initializer_list<PistonHandle> pistons) {
+    for (const auto& piston : pistons) add(piston);
+  }
+
+  void add(const PistonHandle& piston) {
+    if (piston.piston == nullptr) return;
+    const std::string key = piston.name.empty() ? std::to_string(pistons_.size()) : piston.name;
+    pistons_[key] = piston;
+  }
+
+  void remove(const std::string& name) { pistons_.erase(name); }
+  void enable(const std::string& name) { pistons_.at(name).enabled = true; }
+  void disable(const std::string& name) { pistons_.at(name).enabled = false; }
+
+  void on() {
+    for (auto& [_, piston] : pistons_) {
+      if (piston.enabled && piston.piston != nullptr) piston.piston->on();
+    }
+  }
+
+  void off() {
+    for (auto& [_, piston] : pistons_) {
+      if (piston.enabled && piston.piston != nullptr) piston.piston->off();
+    }
+  }
+
+  void toggle() {
+    const bool targetState = !state();
+    targetState ? on() : off();
+  }
+
+  bool state() const {
+    for (const auto& [_, piston] : pistons_) {
+      if (piston.enabled && piston.piston != nullptr) return piston.piston->state();
+    }
+    return false;
+  }
+
+ private:
+  std::map<std::string, PistonHandle> pistons_;
 };
 
 class MotorGroup : public pros::MotorGroup {

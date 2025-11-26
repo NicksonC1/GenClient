@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <vector>
+#include "gen/misc.h"
 #include "pros/distance.hpp"
 #include "pros/imu.hpp"
 #include "pros/motor_group.hpp"
@@ -8,8 +9,6 @@
 #include "pros/rotation.hpp"
 
 namespace gen {
-
-constexpr double kPi = 3.14159265358979323846;
 
 struct Pose {
   double x{0.0};
@@ -21,10 +20,6 @@ struct Pose {
 
   Pose operator*(double scalar) const { return {x * scalar, y * scalar, theta * scalar}; }
 };
-
-double deg_to_rad(double deg);
-double rad_to_deg(double rad);
-double ema(double sample, double prev, double alpha);
 
 class Drivetrain {
  public:

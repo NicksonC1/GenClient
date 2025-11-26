@@ -32,12 +32,6 @@ double prevHorizontal2 = 0.0;
 double prevImu = 0.0;
 }  // namespace
 
-double deg_to_rad(const double deg) { return deg * kPi / 180.0; }
-double rad_to_deg(const double rad) { return rad * 180.0 / kPi; }
-double ema(const double sample, const double prev, const double alpha) {
-  return alpha * prev + (1.0 - alpha) * sample;
-}
-
 Drivetrain::Drivetrain(pros::MotorGroup* left,
                        pros::MotorGroup* right,
                        const double gear_ratio,

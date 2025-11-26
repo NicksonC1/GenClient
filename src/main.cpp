@@ -5,12 +5,15 @@
 #include "gen/odom.h"
 #include "pros/distance.hpp"
 #include "pros/optical.hpp"
+#include "gen/exit.h"
 
 using DriveMode = gen::Controller::DriveMode;
 using Button = gen::Controller::Button;
  // <--------------------------------------------------------------- Setup ------------------------------------------------------------------>
 gen::Controller controller(DriveMode::Arcade2Stick, 3, 10.0, true, pros::E_CONTROLLER_MASTER);
-gen::Piston pistonA('A'); 
+gen::Piston wingPiston('A', false, "wing");
+gen::PistonGroup wings({{"wing", &wingPiston}}); 
+
 pros::adi::DigitalIn autonSwitch('H');
 pros::Distance frontWall(4);
 pros::Distance leftWall(3);
@@ -35,18 +38,26 @@ std::vector<gen::DistanceResetSensor> distanceResetSensors = {
     {&leftWall, gen::DistanceResetSensor::Side::Left, -4.0, 10.0},
 };
 
-gen::Chassis::Tuning lateralTuning{8.0, 0.0, 0.0};
-gen::Chassis::Tuning angularTuning{2.0, 0.0, 0.0};
-gen::Chassis::Limits lateralLimits{2.0, 250, 4000, 127.0};
-gen::Chassis::Limits angularLimits{2.0, 250, 3000, 127.0};
+gen::Chassis::Tuning lateralTuning{8.0,   // kP: proportional gain for linear error
+                                   0.0,   // kI: integral gain for linear error
+                                   0.0,   // kD: derivative gain for linear error
+                                   2.0,   // headingToleranceDeg: acceptable angular error while driving
+                                   250,   // settleTimeMs: how long error must stay within tolerance
+                                   4000,  // timeoutMs: max time to try the move
+                                   127.0  // maxCommand: clamp for motor command
+};
+gen::Chassis::Tuning angularTuning{2.0,   // kP: proportional gain for turns
+                                   0.0,   // kI: integral gain for turns
+                                   0.0,   // kD: derivative gain for turns
+                                   2.0,   // headingToleranceDeg: acceptable heading error when turning
+                                   250,   // settleTimeMs: how long heading must stay within tolerance
+                                   3000,  // timeoutMs: max time to try the turn
+                                   127.0  // maxCommand: clamp for motor command
+};
 
-gen::Chassis chassis(leftMotors,
-                     rightMotors,
-                     drive,
-                     lateralTuning,
-                     angularTuning,
-                     lateralLimits,
-                     angularLimits);
+gen::Chassis chassis(leftMotors, rightMotors, drive, lateralTuning, angularTuning);
+
+// gen::ExitConditions exits;
 
 namespace Auton{
     void main(){
@@ -84,9 +95,9 @@ std::vector<std::pair<std::string, AutonFunc>> autonRoutines = {
 };
 
 void selector() {
-    if (autonSwitch.get_new_press()) { autonState++; if (autonState == autonRoutines.size()) autonState = 0; }
-    pros::lcd::set_text(4, autonRoutines[autonState].first);
-    pros::delay(10);
+  if (autonSwitch.get_new_press()) { autonState++; if (autonState == autonRoutines.size()) autonState = 0; }
+  pros::lcd::set_text(4, autonRoutines[autonState].first);
+  pros::delay(10);
 }
 
 // <----------------------------------------------------------- Main Functions ------------------------------------------------------------>
@@ -118,7 +129,7 @@ void autonomous() {
 void opcontrol() {
 	while (1) {
     controller.arcade_two_stick();
-    if(controller.pressed(Button::A)) { pistonA.toggle(); }
+    if(controller.pressed(Button::A)) { wings.toggle(); }
 		pros::delay(10);
 	}
 }
