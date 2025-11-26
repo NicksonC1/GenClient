@@ -44,12 +44,12 @@ class Motion {
    * @param targetDeg absolute field heading in degrees
    * @param timeoutMs maximum duration before abort
    * @param minPower minimum absolute power to overcome static friction
-   * @param maxPower cap as percentage of full (100 -> 127 internal)
+   * @param maxPower cap in motor units (0-127)
    */
   void turnHeading(double targetDeg,
                    std::uint32_t timeoutMs = 3000,
                    double minPower = 0.0,
-                   double maxPower = 100.0);
+                   double maxPower = 127.0);
 
   // Rotate to face a field point.
   /**
@@ -57,13 +57,13 @@ class Motion {
    * @param targetY field Y in inches
    * @param timeoutMs maximum duration before abort
    * @param minPower minimum absolute power to overcome static friction
-   * @param maxPower cap as percentage of full (100 -> 127 internal)
+   * @param maxPower cap in motor units (0-127)
    */
   void turnPoint(double targetX,
                  double targetY,
                  std::uint32_t timeoutMs = 3000,
                  double minPower = 0.0,
-                 double maxPower = 100.0);
+                 double maxPower = 127.0);
 
   // Drive to a point while correcting heading toward that point.
   /**
@@ -71,15 +71,33 @@ class Motion {
    * @param targetY field Y in inches
    * @param timeoutMs maximum duration before abort
    * @param minPower minimum absolute power to overcome static friction
-   * @param maxPower cap as percentage of full (100 -> 127 internal)
+   * @param maxPower cap in motor units (0-127)
    * @param settle require dwell in tolerance before exit
+   * @param forward when false, drive backward toward the target
    */
   void movePoint(double targetX,
                  double targetY,
                  std::uint32_t timeoutMs = 4000,
                  double minPower = 0.0,
-                 double maxPower = 100.0,
-                 bool settle = true);
+                 double maxPower = 127.0,
+                 bool settle = true,
+                 bool forward = true);
+
+  // Drive a straight-line distance along the current heading.
+  /**
+   * @param distance inches along current heading (positive forward)
+   * @param timeoutMs maximum duration before abort
+   * @param forward when false, drive backward toward the target
+   * @param minPower minimum absolute power to overcome static friction
+   * @param maxPower cap in motor units (0-127)
+   * @param settle require dwell in tolerance before exit
+   */
+  void moveDistance(double distance,
+                    std::uint32_t timeoutMs = 4000,
+                    bool forward = true,
+                    double minPower = 0.0,
+                    double maxPower = 127.0,
+                    bool settle = true);
 
   // Drive to a pose with lookahead leads (dLead along heading, gLead lateral to heading).
   /**
@@ -89,8 +107,9 @@ class Motion {
    * @param dLead forward lead distance along heading
    * @param gLead lateral lead distance perpendicular to heading
    * @param timeoutMs maximum duration before abort
+   * @param forward when false, drive backward toward the target
    * @param minPower minimum absolute power to overcome static friction
-   * @param maxPower cap as percentage of full (100 -> 127 internal)
+   * @param maxPower cap in motor units (0-127)
    * @param settle require dwell in tolerance before exit
    */
   void movePose(double targetX,
@@ -99,8 +118,9 @@ class Motion {
                 double dLead,
                 double gLead,
                 std::uint32_t timeoutMs = 5000,
+                bool forward = true,
                 double minPower = 0.0,
-                double maxPower = 100.0,
+                double maxPower = 127.0,
                 bool settle = true);
 
  private:

@@ -6,7 +6,7 @@
 #include "pros/rtos.hpp"
 
 namespace {
-constexpr double kPowerScale = 1.27;  // scale 100 -> 127 motor command
+constexpr double kPowerScale = 1.0;  // commands already in motor units (0-127)
 }
 
 namespace gen {
@@ -97,7 +97,8 @@ void Motion::movePoint(const double targetX,
                        const std::uint32_t timeoutMs,
                        const double minPower,
                        const double maxPower,
-                       const bool settle) {
+                       const bool settle,
+                       const bool forward) {
   lateralPid_.reset();
   headingPid_.reset();
 
@@ -111,10 +112,11 @@ void Motion::movePoint(const double targetX,
     const double dy = targetY - pose.y;
     const double distance = std::hypot(dx, dy);
 
-    const double targetHeading = std::atan2(dx, dy);
+    const double targetHeading = std::atan2(dx, dy) + (forward ? 0.0 : kPi);
     const double headingErrorDeg = wrapAngleDeg(rad_to_deg(targetHeading - pose.theta));
 
     double forwardCmd = clampPower(lateralPid_.update(distance), maxPower, lateral_);
+    if (!forward) forwardCmd *= -1;
     double turnCmd = clampPower(headingPid_.update(headingErrorDeg), maxPower, angular_);
     if (std::abs(forwardCmd) < minPower * kPowerScale) forwardCmd = std::copysign(minPower * kPowerScale, forwardCmd);
 
@@ -135,15 +137,28 @@ void Motion::movePoint(const double targetX,
   stop();
 }
 
+void Motion::moveDistance(const double distance,
+                          const std::uint32_t timeoutMs,
+                          const bool forward,
+                          const double minPower,
+                          const double maxPower,
+                          const bool settle) {
+  const Pose pose = gen::getPose(true);
+  const double targetX = pose.x + distance * std::sin(pose.theta);
+  const double targetY = pose.y + distance * std::cos(pose.theta);
+  movePoint(targetX, targetY, timeoutMs, minPower, maxPower, settle, forward);
+}
+
 void Motion::movePose(const double targetX,
                       const double targetY,
                       const double targetHeadingDeg,
                       const double dLead,
                       const double gLead,
                       const std::uint32_t timeoutMs,
-                      const double minPower,
-                      const double maxPower,
-                      const bool settle) {
+                      const bool forward,
+                       const double minPower,
+                       const double maxPower,
+                       const bool settle) {
   // Lead the target to reduce corner-cutting (similar to inspo: dLead forward, gLead lateral).
   const double targetHeadingRad = deg_to_rad(targetHeadingDeg);
   const double leadX = targetX + dLead * std::sin(targetHeadingRad) - gLead * std::cos(targetHeadingRad);
@@ -162,7 +177,7 @@ void Motion::movePose(const double targetX,
     const double dy = leadY - pose.y;
     const double distance = std::hypot(dx, dy);
 
-    const double desiredHeading = std::atan2(dx, dy);
+    const double desiredHeading = std::atan2(dx, dy) + (forward ? 0.0 : kPi);
     const double headingErrorDeg =
         wrapAngleDeg(rad_to_deg(desiredHeading - pose.theta));  // point toward the lead
     const double facingErrorDeg =
@@ -173,6 +188,7 @@ void Motion::movePose(const double targetX,
     const double headingBlend = std::clamp(distance / (distance + 1.0), 0.0, 1.0);
     const double combinedHeadingError = headingBlend * headingErrorDeg + (1.0 - headingBlend) * facingErrorDeg;
     double turnCmd = clampPower(headingPid_.update(combinedHeadingError), maxPower, angular_);
+    if (!forward) forwardCmd *= -1;
     if (std::abs(forwardCmd) < minPower * kPowerScale) forwardCmd = std::copysign(minPower * kPowerScale, forwardCmd);
 
     const double leftCmd = clampPower(forwardCmd + turnCmd, maxPower, lateral_);

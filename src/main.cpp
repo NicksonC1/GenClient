@@ -64,22 +64,22 @@ namespace Auton{
         const auto pose = motion.getPose(true);
         const double targetX = pose.x + 24.0 * std::sin(pose.theta);
         const double targetY = pose.y + 24.0 * std::cos(pose.theta);
-        motion.movePoint(targetX, targetY, 4000, 5.0, 100.0, true);
+        motion.movePoint(targetX, targetY, 4000, 5.0, 127.0, true);
       }
 
       // Turn to absolute heading 90 deg.
-      motion.turnHeading(90.0, 3000, 5.0, 100.0);
+      motion.turnHeading(90.0, 3000, 5.0, 127.0);
 
       // Strafe left 12" relative to new heading.
       {
         const auto pose = motion.getPose(true);
         const double targetX = pose.x + (-12.0) * -std::cos(pose.theta);
         const double targetY = pose.y + (-12.0) * std::sin(pose.theta);
-        motion.movePoint(targetX, targetY, 4000, 5.0, 100.0, true);
+        motion.movePoint(targetX, targetY, 4000, 5.0, 127.0, true);
       }
 
       // Move to a field pose with final heading 45 deg.
-      motion.movePose(24.0, 36.0, 45.0, 2.0, 0.5, 5000, 5.0, 100.0, true);
+      motion.movePose(24.0, 36.0, 45.0, 2.0, 0.5, 5000, true, 5.0, 127.0, true);
     }
     void leftB(){}
     void leftR(){}
