@@ -1,8 +1,6 @@
 <img src="images/genclient.png">
 
-## features
--
----
+## Features
 - controller wrapper with tank/arcade mixes, deadband, and optional drive curves
 - motor + piston wrappers (grouped pistons, rpm/gear-aware motor moves, IMU scaling)
 - odom core that blends tracking wheels, drive substitutions, and distance-sensor wall resets
@@ -10,12 +8,10 @@
 - tiny PID + math utilities plus exit-condition combinators for loop control
 - auton registry stub (`include/gen/auton.h`) ready for your routines
 
-## usage
--
-to use genClient, include the headers you need (e.g. `#include "gen/motion.h"`) and initialize odom once with `setSensors(...)` + `init()`. Most helpers expect inches for linear values and degrees for user-facing angles.
+## Usage
+To use genClient, include the headers you need (e.g. `#include "gen/motion.h"`) and initialize odom once with `setSensors(...)` + `init()`. Most helpers expect inches for linear values and degrees for user-facing angles.
 
-<font size = 6>**hardware abstractions**</font>
--
+<font size = 6>**Hardware abstractions**</font>
 ---
 **motors**
 - `gen::MotorGroup` extends `pros::MotorGroup` and remembers motor rpm + external gear ratio.
@@ -48,8 +44,7 @@ wings.toggle(); // flips all enabled pistons
 **imu**
 - `gen::CustomIMU` subclasses `pros::IMU` and scales `get_rotation()` by a supplied scalar (useful for calibration quirks).
 
-<font size = 6>**controller**</font>
--
+<font size = 6>**Controller**</font>
 ---
 `gen::Controller` wraps a `pros::Controller` and offers quick drive mixes.
 
@@ -70,8 +65,7 @@ while (true) {
 }
 ```
 
-<font size = 6>**odom core**</font>
--
+<font size = 6>**Odometry**</font>
 ---
 Odom is modular: mix tracking wheels, substitute drive encoders, and optionally add distance sensors for wall-based resets. Linear units are inches; stored heading is radians internally.
 
@@ -104,8 +98,7 @@ gen::init();
 auto pose = gen::getPose(); // degrees by default
 ```
 
-<font size = 6>**motion helpers**</font>
--
+<font size = 6>**Motion helpers**</font>
 ---
 `gen::Motion` layers PID loops on top of odom for quick autonomous moves. It owns two `pros::MotorGroup` references (left/right) and two PID tunings (lateral + angular).
 
@@ -126,13 +119,12 @@ motion.turnHeading(90.0, 3000, 5.0);           // face 90 deg
 motion.movePose(24.0, 36.0, 45.0, 2.0, 0.5);   // drive to pose with lead
 ```
 
-<font size = 6>**pid + math bits**</font>
--
+<font size = 6>**PID + Math Functions**</font>
 ---
 - `gen::PID` (in `src/gen/pid.cpp`): `update(error)` with optional integral windup guard (`iMax`) and sign-change reset; `reset()` clears integrator/derivative memory.
 - `gen::kPi`, `deg_to_rad()`, `rad_to_deg()`, `ema(sample, prev, alpha)`, `getSign(auto)` live in `gen/misc`.
 
-<font size = 6>**exit conditions**</font>
+<font size = 6>**Exit conditions**</font>
 -
 ---
 Combine multiple stopping rules for motion loops.
@@ -152,14 +144,15 @@ while (exits.shouldContinue()) {
 }
 ```
 
-<font size = 6>**auton skeleton**</font>
--
+<font size = 6>**Autonomous Selector**</font>
 ---
 - `include/gen/auton.h` holds stub functions and a `routines` vector of `{name, fn}`. Fill these out or mirror the pattern in `src/main.cpp` where a limit switch steps through a list of routines.
 - `gen::selector` headers are empty placeholders—drop your own UI or keep the simple LCD text approach used in `main.cpp`.
 
-<font size = 6>**notes**</font>
--
+<font size = 6>**Notes**</font>
 ---
 - `include/gen/colorsort.h` and `src/gen/colorsort.cpp` are placeholders; the prior color-sort logic is commented for reference.
 - `src/gen/chassis.cpp` is commented out in favor of the richer `gen::Motion` layer; uncomment/extend if you prefer a lighter drivetrain wrapper.
+
+### Any Questions or want to contribute? 
+- Message 'nickson78181a' on discord!
