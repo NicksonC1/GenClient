@@ -23,8 +23,8 @@ pros::Rotation verticalRight(6);
 pros::Rotation horizontal(7);
 gen::CustomIMU s_imu(9, 1.0);
 
-pros::MotorGroup leftMotors({-11, -12, -13}, pros::MotorGearset::blue); 
-pros::MotorGroup rightMotors({18, 19, 20}, pros::MotorGearset::blue); 
+gen::MotorGroup leftMotors({-11, -12, -13}, 600.0, 1.333); 
+gen::MotorGroup rightMotors({18, 19, 20}, 600.0, 1.333); 
 
 gen::TrackingWheel verticalLTracker(&verticalLeft, 2.75, 3.5, 1.0, false);
 gen::TrackingWheel verticalRTracker(&verticalRight, 2.75, -3.5, 1.0, true);
@@ -97,14 +97,14 @@ using AutonFunc = void(*)();
 std::vector<std::pair<std::string, AutonFunc>> autonRoutines = {
   {"Default Auton", Auton::main},
   
-  {"Blue Left Qual", Auton::leftB},
-  {"Red Left Qual", Auton::leftR},
+  {"Blue Left", Auton::leftB},
+  {"Red Left", Auton::leftR},
 
-  {"Blue Right Qual", Auton::rightB},
-  {"Red Right Qual", Auton::rightR},
+  {"Blue Right", Auton::rightB},
+  {"Red Right", Auton::rightR},
 
-  {"Blue Solo Qual", Auton::soloB},
-  {"Red Solo Qual", Auton::soloR},
+  {"Blue Solo", Auton::soloB},
+  {"Red Solo", Auton::soloR},
 
   {"Skills", Auton::skills},
 };
@@ -122,6 +122,10 @@ void initialize() {
   gen::setSensors(sensors, drive);
   gen::setDistanceResetSensors(distanceResetSensors);
   gen::init();
+
+  // Example: access a single motor inside the group for diagnostics.
+  leftMotors[1].set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  pros::lcd::print(3, "Left mid temp: %.1f", leftMotors[1].get_temperature());
 
   pros::Task screenTask([&]() {
     while (1) {

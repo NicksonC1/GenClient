@@ -20,6 +20,7 @@ To use genClient, include the headers you need (e.g. `#include "gen/motion.h"`) 
   - `move_rpm(double rpm)` commands motor rpm directly
   - `move_wheel_rpm(double wheel_rpm)` converts via stored gear ratio
   - accessors: `motor_rpm()`, `gear_ratio()`, `wheel_rpm()`
+  - per-motor access: `group[index]` returns a `pros::Motor&`
 
 example:
 ```cpp
@@ -27,6 +28,8 @@ gen::MotorGroup left({-11, -12, -13}, 200.0, 1.333); // ports, motor rpm, gear r
 left.move_percent(0.8);
 left.move_rpm(150);
 left.move_wheel_rpm(280);
+left[1].move(127);              // direct access to the 2nd motor (0-based)
+auto temp = left[1].get_temperature();
 ```
 
 **pistons**

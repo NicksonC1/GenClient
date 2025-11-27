@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cmath>
 #include <initializer_list>
 #include <map>
@@ -112,12 +113,17 @@ class MotorGroup : public pros::MotorGroup {
   MotorGroup(std::initializer_list<std::int8_t> ports, double motor_rpm, double gear_ratio)
       : pros::MotorGroup(ports, gearset_from_rpm(motor_rpm)),
         motor_rpm_(motor_rpm),
-        gear_ratio_(gear_ratio) {}
+        gear_ratio_(gear_ratio),
+        motors_(build_motors(ports, gearset_from_rpm(motor_rpm))) {}
 
   MotorGroup(const std::vector<std::int8_t>& ports, double motor_rpm, double gear_ratio)
       : pros::MotorGroup(ports, gearset_from_rpm(motor_rpm)),
         motor_rpm_(motor_rpm),
-        gear_ratio_(gear_ratio) {}
+        gear_ratio_(gear_ratio),
+        motors_(build_motors(ports, gearset_from_rpm(motor_rpm))) {}
+
+  pros::Motor& operator[](std::size_t index) { return motors_.at(index); }
+  const pros::Motor& operator[](std::size_t index) const { return motors_.at(index); }
 
   // Move with a normalized percent [-1, 1], keeping the original move() available.
   void move_percent(double percent) {
@@ -136,6 +142,26 @@ class MotorGroup : public pros::MotorGroup {
   double wheel_rpm() const { return gear_ratio_ == 0 ? 0 : motor_rpm_ / gear_ratio_; }
 
  private:
+  static std::vector<pros::Motor> build_motors(std::initializer_list<std::int8_t> ports,
+                                               pros::v5::MotorGears gearset) {
+    std::vector<pros::Motor> motors;
+    motors.reserve(ports.size());
+    for (auto port : ports) {
+      motors.emplace_back(port, gearset);
+    }
+    return motors;
+  }
+
+  static std::vector<pros::Motor> build_motors(const std::vector<std::int8_t>& ports,
+                                               pros::v5::MotorGears gearset) {
+    std::vector<pros::Motor> motors;
+    motors.reserve(ports.size());
+    for (auto port : ports) {
+      motors.emplace_back(port, gearset);
+    }
+    return motors;
+  }
+
   static double clamp_percent(double percent) {
     if (percent > 1.0) {
       return 1.0;
@@ -162,6 +188,7 @@ class MotorGroup : public pros::MotorGroup {
 
   double motor_rpm_{0};
   double gear_ratio_{1};
+  std::vector<pros::Motor> motors_{};
 };
 
 class Controller {
