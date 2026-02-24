@@ -1,6 +1,6 @@
-#include "robot/motion_setup.hpp"
+#include "gen/setup.hpp"
 
-namespace robot::motion {
+namespace gen::Motion {
 
 gen::ControllerSettings ControllerProfile::toGen() const {
     return gen::ControllerSettings(gains.kP,
@@ -22,4 +22,4 @@ gen::OdomSensors OdomProfile::toGen() const {
     return gen::OdomSensors(vertical1, vertical2, horizontal1, horizontal2, imu);
 }
 
-}  // namespace robot::motion
+}  // namespace gen::Motion

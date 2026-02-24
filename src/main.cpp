@@ -1,6 +1,10 @@
 #include "main.h"
 #include "gen/electronics.h"
-#include "robot/motion_setup.hpp"
+#include "gen/setup.hpp"
+#include "pros/distance.hpp"
+
+using DriveMode = gen::Controller::DriveMode;
+using Button = gen::Controller::Button;
 
 // ========================= User Template =========================
 // Edit this section first when reusing the project on a new robot.
@@ -11,17 +15,19 @@
 gen::Controller controller(gen::Controller::DriveMode::Arcade2Stick, 3, 10.0, true);
 gen::MotorGroup leftDrive({1, -2, 3}, 600.0, 1.0);
 gen::MotorGroup rightDrive({-4, 5, -6}, 600.0, 1.0);
-pros::Motor intake(10, pros::MotorGearset::blue);
-pros::Imu imu(7);
+gen::CustomIMU imu(9, 1.01123595506);
 
-constexpr robot::motion::DrivetrainProfile drivetrainProfile{
+gen::Piston wingPiston('A', false, "wing");
+gen::PistonGroup wings({{"wing", &wingPiston}}); 
+
+constexpr gen::Motion::DrivetrainProfile drivetrainProfile{
     .trackWidthIn = 11.75f,
     .wheelDiameterIn = gen::Omniwheel::NEW_325,
     .wheelRpm = 600.0f,
     .horizontalDrift = 10.0f,
 };
 
-constexpr robot::motion::ControllerProfile lateralProfile{
+constexpr gen::Motion::ControllerProfile lateralProfile{
     .gains = {7.5f, 0.0f, 6.0f},
     .antiWindupRange = 0.0f,
     .smallError = {1.0f, 100},
@@ -29,7 +35,7 @@ constexpr robot::motion::ControllerProfile lateralProfile{
     .slew = 0.0f,
 };
 
-constexpr robot::motion::ControllerProfile angularProfile{
+constexpr gen::Motion::ControllerProfile angularProfile{
     .gains = {2.75f, 0.0f, 17.5f},
     .antiWindupRange = 0.0f,
     .smallError = {1.0f, 100},
@@ -37,7 +43,7 @@ constexpr robot::motion::ControllerProfile angularProfile{
     .slew = 0.0f,
 };
 
-constexpr robot::motion::OdomProfile odomProfile{
+constexpr gen::Motion::OdomProfile odomProfile{
     .imu = &imu,
 };
 // ======================= End User Template =======================
@@ -45,14 +51,14 @@ constexpr robot::motion::OdomProfile odomProfile{
 gen::Drivetrain drivetrain = drivetrainProfile.toGen(&leftDrive, &rightDrive);
 gen::ControllerSettings lateralController = lateralProfile.toGen();
 gen::ControllerSettings angularController = angularProfile.toGen();
-gen::OdomSensors chassisSensors = odomProfile.toGen();
-gen::Chassis chassis(drivetrain, lateralController, angularController, chassisSensors);
-bool intakeOn = false;
+gen::OdomSensors odomSensor = odomProfile.toGen();
+gen::Chassis chassis(drivetrain, lateralController, angularController, odomSensor);
 
 void initialize() {
+    pros::lcd::initialize();
     chassis.calibrate();
     chassis.setPose(0, 0, 0);
-    controller.raw().rumble(".");
+    // controller.raw().rumble(".");
 }
 
 void disabled() {}
@@ -63,16 +69,11 @@ void autonomous() {}
 
 void opcontrol() {
     while (true) {
-        const auto [leftPower, rightPower] = controller.drive_values();
-        chassis.tank(leftPower, rightPower);
+        controller.arcade_two_stick();
 
-        // Sample: toggle intake with L1 pressed.
-        // Each new L1 press flips intake on/off.
-        if (controller.pressed(gen::Controller::Button::L1)) {
-            intakeOn = !intakeOn;
-        }
-        intake.move(intakeOn ? 127 : 0);
-
+        // Sample: toggle wings with R2 pressed.
+        // Each new R2 press flips wings on/off.
+        if(controller.pressed(Button::R2)) { wings.toggle(); }
         pros::delay(10);
     }
 }

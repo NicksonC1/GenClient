@@ -3,6 +3,7 @@
 #include "gen/pid.hpp" // IWYU pragma: keep
 #include "gen/pose.hpp" // IWYU pragma: keep
 #include "gen/util.hpp" // IWYU pragma: keep
+#include "gen/rclTracking.hpp" // IWYU pragma: keep
 #include "gen/chassis/chassis.hpp"
 #include "gen/chassis/trackingWheel.hpp" // IWYU pragma: keep
 

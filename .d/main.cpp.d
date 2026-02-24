@@ -666,12 +666,12 @@ bin/main.cpp.o: src/main.cpp include/main.h include/api.h \
  include/pros/rotation.hpp include/pros/rotation.h include/pros/rtos.hpp \
  include/pros/screen.hpp include/pros/screen.h include/pros/vision.hpp \
  include/pros/vision.h include/gen/electronics.h include/pros/adi.hpp \
- include/pros/imu.hpp include/pros/motor_group.hpp \
- include/robot/motion_setup.hpp include/gen/api.hpp include/gen/pid.hpp \
- include/gen/pose.hpp include/gen/util.hpp \
- include/gen/chassis/chassis.hpp include/gen/asset.hpp \
- include/gen/chassis/trackingWheel.hpp include/pros/rotation.hpp \
- include/gen/exitcondition.hpp
+ include/pros/imu.hpp include/pros/motor_group.hpp include/gen/setup.hpp \
+ include/gen/api.hpp include/gen/pid.hpp include/gen/pose.hpp \
+ include/gen/util.hpp include/gen/chassis/chassis.hpp \
+ include/gen/asset.hpp include/gen/chassis/trackingWheel.hpp \
+ include/pros/rotation.hpp include/gen/exitcondition.hpp \
+ include/gen/rclTracking.hpp include/pros/distance.hpp
 include/main.h:
 include/api.h:
 include/pros/adi.h:
@@ -1414,7 +1414,7 @@ include/gen/electronics.h:
 include/pros/adi.hpp:
 include/pros/imu.hpp:
 include/pros/motor_group.hpp:
-include/robot/motion_setup.hpp:
+include/gen/setup.hpp:
 include/gen/api.hpp:
 include/gen/pid.hpp:
 include/gen/pose.hpp:
@@ -1424,3 +1424,5 @@ include/gen/asset.hpp:
 include/gen/chassis/trackingWheel.hpp:
 include/pros/rotation.hpp:
 include/gen/exitcondition.hpp:
+include/gen/rclTracking.hpp:
+include/pros/distance.hpp:
