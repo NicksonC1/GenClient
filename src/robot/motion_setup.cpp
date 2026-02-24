@@ -1,0 +1,25 @@
+#include "robot/motion_setup.hpp"
+
+namespace robot::motion {
+
+gen::ControllerSettings ControllerProfile::toGen() const {
+    return gen::ControllerSettings(gains.kP,
+                                       gains.kI,
+                                       gains.kD,
+                                       antiWindupRange,
+                                       smallError.range,
+                                       smallError.timeoutMs,
+                                       largeError.range,
+                                       largeError.timeoutMs,
+                                       slew);
+}
+
+gen::Drivetrain DrivetrainProfile::toGen(pros::MotorGroup* left, pros::MotorGroup* right) const {
+    return gen::Drivetrain(left, right, trackWidthIn, wheelDiameterIn, wheelRpm, horizontalDrift);
+}
+
+gen::OdomSensors OdomProfile::toGen() const {
+    return gen::OdomSensors(vertical1, vertical2, horizontal1, horizontal2, imu);
+}
+
+}  // namespace robot::motion
