@@ -1,11 +1,6 @@
-bin/main.cpp.o: src/main.cpp include/main.h include/api.h \
- include/pros/adi.h include/pros/ai_vision.h include/pros/colors.h \
- include/pros/device.h include/pros/distance.h include/pros/error.h \
- include/pros/ext_adi.h include/pros/adi.h include/pros/adi.h \
- include/pros/gps.h include/pros/imu.h include/pros/link.h \
- include/pros/llemu.h include/liblvgl/llemu.h include/liblvgl/lvgl.h \
- include/liblvgl/lv_version.h include/liblvgl/lvgl_private.h \
- include/liblvgl/core/lv_global.h \
+bin/GenSelector/background.c.o: src/GenSelector/background.c \
+ include/liblvgl/lvgl.h include/liblvgl/lv_version.h \
+ include/liblvgl/lvgl_private.h include/liblvgl/core/lv_global.h \
  include/liblvgl/core/../lv_conf_internal.h \
  include/liblvgl/core/../lv_conf_kconfig.h \
  include/liblvgl/core/../lv_conf.h \
@@ -643,46 +638,7 @@ bin/main.cpp.o: src/main.cpp include/main.h include/api.h \
  include/liblvgl/drivers/wayland/lv_wayland.h \
  include/liblvgl/drivers/wayland/../../display/lv_display.h \
  include/liblvgl/drivers/wayland/../../indev/lv_indev.h \
- include/liblvgl/lv_api_map_v9_0.h include/liblvgl/lv_api_map_v9_1.h \
- include/pros/misc.h include/pros/motors.h include/pros/optical.h \
- include/pros/error.h include/pros/rotation.h include/pros/rtos.h \
- include/pros/screen.h include/pros/colors.h include/pros/vision.h \
- include/pros/adi.hpp include/pros/ai_vision.hpp include/pros/ai_vision.h \
- include/pros/device.hpp include/pros/misc.hpp include/pros/misc.h \
- include/pros/rtos.hpp include/pros/rtos.h include/pros/colors.hpp \
- include/pros/device.hpp include/pros/distance.hpp \
- include/pros/distance.h include/pros/gps.hpp include/pros/gps.h \
- include/pros/imu.hpp include/pros/imu.h include/pros/link.hpp \
- include/pros/link.h include/pros/llemu.hpp include/liblvgl/llemu.hpp \
- include/pros/misc.hpp include/pros/motor_group.hpp \
- include/pros/abstract_motor.hpp include/pros/motors.h \
- include/pros/rtos.hpp include/pros/colors.hpp include/pros/motors.hpp \
- include/pros/motors.hpp include/pros/optical.hpp include/pros/optical.h \
- include/pros/rotation.hpp include/pros/rotation.h include/pros/rtos.hpp \
- include/pros/screen.hpp include/pros/screen.h include/pros/vision.hpp \
- include/pros/vision.h src/GenSelector/selector.hpp include/pros/adi.hpp \
- include/gen/electronics.h include/pros/imu.hpp \
- include/pros/motor_group.hpp include/gen/setup.hpp include/gen/api.hpp \
- include/gen/pid.hpp include/gen/pose.hpp include/gen/util.hpp \
- include/gen/chassis/chassis.hpp include/gen/asset.hpp \
- include/gen/chassis/trackingWheel.hpp include/pros/rotation.hpp \
- include/gen/exitcondition.hpp include/pros/distance.hpp
-include/main.h:
-include/api.h:
-include/pros/adi.h:
-include/pros/ai_vision.h:
-include/pros/colors.h:
-include/pros/device.h:
-include/pros/distance.h:
-include/pros/error.h:
-include/pros/ext_adi.h:
-include/pros/adi.h:
-include/pros/adi.h:
-include/pros/gps.h:
-include/pros/imu.h:
-include/pros/link.h:
-include/pros/llemu.h:
-include/liblvgl/llemu.h:
+ include/liblvgl/lv_api_map_v9_0.h include/liblvgl/lv_api_map_v9_1.h
 include/liblvgl/lvgl.h:
 include/liblvgl/lv_version.h:
 include/liblvgl/lvgl_private.h:
@@ -1354,65 +1310,3 @@ include/liblvgl/drivers/wayland/../../display/lv_display.h:
 include/liblvgl/drivers/wayland/../../indev/lv_indev.h:
 include/liblvgl/lv_api_map_v9_0.h:
 include/liblvgl/lv_api_map_v9_1.h:
-include/pros/misc.h:
-include/pros/motors.h:
-include/pros/optical.h:
-include/pros/error.h:
-include/pros/rotation.h:
-include/pros/rtos.h:
-include/pros/screen.h:
-include/pros/colors.h:
-include/pros/vision.h:
-include/pros/adi.hpp:
-include/pros/ai_vision.hpp:
-include/pros/ai_vision.h:
-include/pros/device.hpp:
-include/pros/misc.hpp:
-include/pros/misc.h:
-include/pros/rtos.hpp:
-include/pros/rtos.h:
-include/pros/colors.hpp:
-include/pros/device.hpp:
-include/pros/distance.hpp:
-include/pros/distance.h:
-include/pros/gps.hpp:
-include/pros/gps.h:
-include/pros/imu.hpp:
-include/pros/imu.h:
-include/pros/link.hpp:
-include/pros/link.h:
-include/pros/llemu.hpp:
-include/liblvgl/llemu.hpp:
-include/pros/misc.hpp:
-include/pros/motor_group.hpp:
-include/pros/abstract_motor.hpp:
-include/pros/motors.h:
-include/pros/rtos.hpp:
-include/pros/colors.hpp:
-include/pros/motors.hpp:
-include/pros/motors.hpp:
-include/pros/optical.hpp:
-include/pros/optical.h:
-include/pros/rotation.hpp:
-include/pros/rotation.h:
-include/pros/rtos.hpp:
-include/pros/screen.hpp:
-include/pros/screen.h:
-include/pros/vision.hpp:
-include/pros/vision.h:
-src/GenSelector/selector.hpp:
-include/pros/adi.hpp:
-include/gen/electronics.h:
-include/pros/imu.hpp:
-include/pros/motor_group.hpp:
-include/gen/setup.hpp:
-include/gen/api.hpp:
-include/gen/pid.hpp:
-include/gen/pose.hpp:
-include/gen/util.hpp:
-include/gen/chassis/chassis.hpp:
-include/gen/asset.hpp:
-include/gen/chassis/trackingWheel.hpp:
-include/pros/rotation.hpp:
-include/gen/exitcondition.hpp:
-include/pros/distance.hpp:

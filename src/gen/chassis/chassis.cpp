@@ -31,12 +31,9 @@ gen::Chassis::Chassis(Drivetrain drivetrain, ControllerSettings linearSettings, 
       lateralSettings(linearSettings),
       angularSettings(angularSettings),
       sensors(sensors),
-      lateralPID(linearSettings.kP, linearSettings.kI, linearSettings.kD, linearSettings.windupRange, true),
-      angularPID(angularSettings.kP, angularSettings.kI, angularSettings.kD, angularSettings.windupRange, true),
-      lateralLargeExit(lateralSettings.largeError, lateralSettings.largeErrorTimeout),
-      lateralSmallExit(lateralSettings.smallError, lateralSettings.smallErrorTimeout),
-      angularLargeExit(angularSettings.largeError, angularSettings.largeErrorTimeout),
-      angularSmallExit(angularSettings.smallError, angularSettings.smallErrorTimeout) {}
+      lateralPID(linearSettings.gains),
+      angularPID(angularSettings.gains),
+      headingPID(angularSettings.correctionGains) {}
 
 /**
  * @brief calibrate the IMU given a sensors struct
@@ -89,9 +86,13 @@ void gen::Chassis::calibrate(bool calibrateImu) {
 
 void gen::Chassis::setPose(float x, float y, float theta, bool radians) {
     gen::setPose(gen::Pose(x, y, theta), radians);
+    headingTarget = radians ? radToDeg(theta) : theta;
 }
 
-void gen::Chassis::setPose(Pose pose, bool radians) { gen::setPose(pose, radians); }
+void gen::Chassis::setPose(Pose pose, bool radians) {
+    gen::setPose(pose, radians);
+    headingTarget = radians ? radToDeg(pose.theta) : pose.theta;
+}
 
 gen::Pose gen::Chassis::getPose(bool radians, bool standardPos) {
     Pose pose = gen::getPose(true);
@@ -134,12 +135,16 @@ void gen::Chassis::endMotion() {
 
 void gen::Chassis::cancelMotion() {
     this->motionRunning = false;
+    drivetrain.leftMotors->move(0);
+    drivetrain.rightMotors->move(0);
     pros::delay(10); // give time for motion to stop
 }
 
 void gen::Chassis::cancelAllMotions() {
     this->motionRunning = false;
     this->motionQueued = false;
+    drivetrain.leftMotors->move(0);
+    drivetrain.rightMotors->move(0);
     pros::delay(10); // give time for motion to stop
 }
 

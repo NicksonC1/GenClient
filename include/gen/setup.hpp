@@ -6,23 +6,10 @@
 
 namespace gen::Motion {
 
-struct PIDGains {
-    float kP = 0.0f;
-    float kI = 0.0f;
-    float kD = 0.0f;
-};
-
-struct ExitBand {
-    float range = 0.0f;
-    int timeoutMs = 0;
-};
-
 struct ControllerProfile {
-    PIDGains gains{};
-    float antiWindupRange = 0.0f;
-    ExitBand smallError{1.0f, 100};
-    ExitBand largeError{3.0f, 500};
-    float slew = 0.0f;
+    PIDConfig gains{};
+    PIDConfig correctionGains{};
+    ExitSettings exits{};
 
     gen::ControllerSettings toGen() const;
 };
@@ -46,4 +33,4 @@ struct OdomProfile {
     gen::OdomSensors toGen() const;
 };
 
-}  // namespace gen::Motion
+} // namespace gen::Motion

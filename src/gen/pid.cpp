@@ -1,30 +1,46 @@
+#include <cmath>
+
 #include "gen/pid.hpp"
-#include "gen/util.hpp"
 
 namespace gen {
-PID::PID(float kP, float kI, float kD, float windupRange, bool signFlipReset)
-    : kP(kP),
-      kI(kI),
-      kD(kD),
-      windupRange(windupRange),
-      signFlipReset(signFlipReset) {}
 
-float PID::update(const float error) {
-    // calculate integral
-    integral += error;
-    if (sgn(error) != sgn((prevError)) && signFlipReset) integral = 0;
-    if (fabs(error) > windupRange && windupRange != 0) integral = 0;
-
-    // calculate derivative
-    const float derivative = error - prevError;
-    prevError = error;
-
-    // calculate output
-    return error * kP + integral * kI + derivative * kD;
+float AsymptoticGains::at(float setpoint) const {
+    const float magnitude = std::pow(std::fabs(setpoint), power);
+    const float scaleMagnitude = std::pow(std::fabs(scale), power);
+    const float denominator = magnitude + scaleMagnitude;
+    if (denominator == 0.0f) return initial;
+    return (final - initial) * magnitude / denominator + initial;
 }
 
-void PID::reset() {
-    integral = 0;
-    prevError = 0;
+PID::PID(PIDConfig config)
+    : config(config), proportionalGain(config.proportional.at(0.0f)) {}
+
+float PID::update(float nextError) {
+    error = nextError;
+
+    if (std::fabs(error) > config.integralRange) {
+        integral = 0.0f;
+    } else if (config.integralSignReset && std::signbit(error) != std::signbit(previousError)) {
+        integral = 0.0f;
+    } else {
+        integral += error * 0.01f;
+    }
+
+    const float derivative = (error - previousError) * 100.0f;
+    previousError = error;
+    return proportionalGain * error + config.kI * integral + config.kD * derivative;
 }
+
+void PID::reset(float initialError) {
+    error = initialError;
+    integral = 0.0f;
+    previousError = initialError;
+}
+
+void PID::setTarget(float setpoint) { proportionalGain = config.proportional.at(setpoint); }
+
+float PID::getError() const { return error; }
+
+float PID::getProportionalGain() const { return proportionalGain; }
+
 } // namespace gen

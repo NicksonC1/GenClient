@@ -1,0 +1,57 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "PROS: Quick Build",
+            "type": "process",
+            "command": "${env:APPDATA}\\Code\\User\\globalStorage\\sigbots.pros\\install\\pros-toolchain-windows\\usr\\bin\\make.exe",
+            "args": [
+                "quick",
+                "-j4"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "Path": "${env:APPDATA}\\Code\\User\\globalStorage\\sigbots.pros\\install\\pros-toolchain-windows\\usr\\bin;${env:APPDATA}\\Code\\User\\globalStorage\\sigbots.pros\\install\\pros-toolchain-windows\\bin;${env:Path}"
+                }
+            },
+            "problemMatcher": "$gcc",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+            }
+        },
+        {
+            "label": "PROS: Fast Build + Upload",
+            "type": "process",
+            "command": "${env:APPDATA}\\Code\\User\\globalStorage\\sigbots.pros\\install\\pros-cli-windows\\pros.exe",
+            "args": [
+                "upload",
+                "--project",
+                "${workspaceFolder}",
+                "--slot",
+                "1",
+                "--after",
+                "run"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "PROS: Quick Build"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": false
+            }
+        }
+    ]
+}
