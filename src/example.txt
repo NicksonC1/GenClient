@@ -37,9 +37,9 @@ constexpr gen::Motion::DrivetrainProfile drivetrainProfile{
 
 constexpr gen::Motion::ControllerProfile lateralProfile{
     .gains = {
-        .proportional = {.initial = 5.73f, .final = 5.73f, .scale = 12.0f, .power = 1.0f},
-        .kI = 0.88f,
-        .kD = 0.01f,
+        .proportional = {.initial = 5.732639f, .final = 5.732639f, .scale = 12.0f, .power = 1.0f},
+        .kI = 0.881944f,
+        .kD = 0.012347f,
         .integralRange = 6.0f,
         .integralSignReset = true,
     },
@@ -54,9 +54,9 @@ constexpr gen::Motion::ControllerProfile lateralProfile{
 
 constexpr gen::Motion::ControllerProfile angularProfile{
     .gains = {
-        .proportional = {.initial = 4.75f, .final = 2.33f, .scale = 28.0f, .power = 1.5f},
-        .kI = 15.875f,
-        .kD = 0.157f,
+        .proportional = {.initial = 4.762500f, .final = 2.328333f, .scale = 28.0f, .power = 1.5f},
+        .kI = 15.875000f,
+        .kD = 0.148167f,
         .integralRange = 5.0f,
         .integralSignReset = true,
     },
@@ -71,6 +71,26 @@ constexpr gen::Motion::ControllerProfile angularProfile{
         .halfPlaneExit = false,
     },
 };
+
+// constexpr gen::Motion::ControllerProfile angularProfile{
+//     .gains = {
+//         .proportional = {.initial = 4.75f, .final = 2.33f, .scale = 28.0f, .power = 1.5f},
+//         .kI = 15.875f,
+//         .kD = 0.157f,
+//         .integralRange = 5.0f,
+//         .integralSignReset = true,
+//     },
+//     .correctionGains = {
+//         .proportional = {.initial = 0.0f, .final = 0.0f, .scale = 1.0f, .power = 1.0f},
+//         .kD = 0.0f,
+//     },
+//     .exits = {
+//         .timeout = 2000,
+//         .velocityExit = 3.0f,
+//         .errorExit = 4.0f,
+//         .halfPlaneExit = false,
+//     },
+// };
 
 constexpr gen::Motion::OdomProfile odomProfile{
     .vertical1 = &verticalTrackingWheel,
