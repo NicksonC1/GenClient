@@ -1,6 +1,6 @@
-# <img src="images/genclient.png">
-
 # GenClient 
+<img src="images/genclient.png" height="450" width="450">
+
 (Will fill out later)
 
 # GenSelector
