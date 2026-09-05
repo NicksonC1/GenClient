@@ -88,13 +88,26 @@ void AutonSelector::start() {
         updateUi();
     }
 
+    running_ = true;
     task_ = std::make_unique<pros::Task>([this]() {
         const std::uint32_t delayMs = std::max<std::uint32_t>(1, config_.pollDelayMs);
-        while (true) {
+        while (running_) {
             tick();
             pros::delay(delayMs);
         }
     }, "Auton Selector");
+}
+
+void AutonSelector::stop() {
+    running_ = false;
+    if (task_ != nullptr) {
+        pros::delay(std::max<std::uint32_t>(1, config_.pollDelayMs) + 1);
+        task_.reset();
+    }
+
+    std::lock_guard<pros::Mutex> lock(uiMutex_);
+    lv_obj_clean(lv_screen_active());
+    ui_ = UiState{};
 }
 
 void AutonSelector::tick() {

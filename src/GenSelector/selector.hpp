@@ -88,6 +88,7 @@ class AutonSelector {
     AutonSelector(SelectorConfig config, AutonRoutineList routines);
 
     void start();
+    void stop();
     void tick();
 
     std::size_t selectedIndex() const;
@@ -147,6 +148,7 @@ class AutonSelector {
     UiState ui_{};
     mutable pros::Mutex uiMutex_{};
     std::uint32_t uiElapsedMs_ = 0;
+    std::atomic<bool> running_{false};
     std::atomic<int> pendingStep_{0};
     bool suppressUiEvent_ = false;
     bool selectorFirstPaint_ = true;

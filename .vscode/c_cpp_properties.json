@@ -12,7 +12,7 @@
         "UNICODE",
         "_UNICODE"
       ],
-      "compilerPath": "c:\\Users\\Nickson\\AppData\\Roaming\\Code\\User\\globalStorage\\sigbots.pros\\install\\pros-toolchain-windows\\usr\\bin\\arm-none-eabi-g++",
+      "compilerPath": "/Users/nicksonc/Library/Application Support/Code/User/globalStorage/sigbots.pros/install/pros-toolchain-macos/bin/arm-none-eabi-g++",
       "cStandard": "gnu11",
       "cppStandard": "gnu++20",
       "intelliSenseMode": "gcc-arm",
@@ -21,7 +21,7 @@
       ],
       "browse": {
         "path": [
-          "d:\\VexProjects\\GenClient"
+          "/Users/nicksonc/Desktop/VexProjects/GenClient"
         ],
         "limitSymbolsToIncludedHeaders": true,
         "databaseFilename": ""
